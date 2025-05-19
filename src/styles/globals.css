@@ -157,10 +157,3 @@
     scrollbar-width: none; /* Firefox */
   }
 }
-
-.bg-layout {
-  background-image: url('../assets/images/bgImage.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
