@@ -36,25 +36,25 @@ const ValidatorTable = ({ data = [], type, onToggleStatus }: ValidatorTableProps
       {
         headerName: "SCOPE",
         field: "scope",
-        flex: 1,
+         width: 10,
         cellStyle: { color: "rgba(247, 247, 247, 0.8)" },
       },
       {
         headerName: "COVERAGE",
         field: "coverage",
-        flex: 1,
+         width: 10,
         cellStyle: { color: "rgba(247, 247, 247, 0.6)" },
       },
       {
         headerName: "STATUS",
         field: "status",
-        flex: 1,
+         width: 10,
         cellRenderer: StatusCellRenderer,
       },
       {
         headerName: "ID",
         field: "id",
-        flex: 1,
+         width: 10,
         cellStyle: { color: "rgba(247, 247, 247, 0.6)" },
       },
     ],
@@ -66,25 +66,25 @@ const ValidatorTable = ({ data = [], type, onToggleStatus }: ValidatorTableProps
       {
         headerName: "SCOPE",
         field: "scope",
-        flex: 1,
+        width: 10,
         cellStyle: { color: "rgba(247, 247, 247, 0.8)" },
       },
       {
         headerName: "7D EARNINGS",
         field: "earnings",
-        flex: 1,
+        width: 10,
         cellStyle: { color: "rgba(247, 247, 247, 0.6)" },
       },
       {
         headerName: "7D USAGE",
         field: "usage",
-        flex: 1,
+        width: 10,
         cellStyle: { color: "rgba(247, 247, 247, 0.6)" },
       },
       {
         headerName: "QUICK STATS",
         field: "quickStats",
-        flex: 1.5,
+        width: 10,
         cellRenderer: (params: any) => {
           const { left, right } = params.value || { left: 0, right: 0 }
           return <ProgressBar leftValue={left} rightValue={right} />
@@ -93,7 +93,7 @@ const ValidatorTable = ({ data = [], type, onToggleStatus }: ValidatorTableProps
       {
         headerName: "STATUS",
         field: "isActive",
-        flex: 0.8,
+        width: 10,
         cellRenderer: (params: any) => {
           return (
             <div className="flex justify-center">
