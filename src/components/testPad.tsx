@@ -18,6 +18,7 @@ const Testpad = () => {
 
   const handleReset = () => {
     setActiveView(null);
+    localStorage.removeItem('currentConversationId')
   };
 
   return (

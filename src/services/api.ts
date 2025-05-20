@@ -47,3 +47,19 @@ export async function getComplianceStats(conversationId: string): Promise<Compli
         throw error
     }
 }
+
+export async function getValidatorsByMessageId(messageId: string): Promise<any> {
+    const endpoint = `${API_URL}/conversations/get-validators-by-message-id?messageId=${messageId}`
+    try {
+        const response = await apiClient.get(endpoint, {
+            params: { messageId },
+            headers: {
+                Accept: "*/*",
+            },
+        })
+        return response.data
+    } catch (error) {
+        console.error("Error fetching validators by message ID:", error)
+        throw error
+    }
+}
