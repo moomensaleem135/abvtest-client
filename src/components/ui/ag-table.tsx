@@ -56,8 +56,7 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
   };
 
   return (
-    <div className="w-full">
-      <div className="ag-theme-alpine w-full max-h-[70vh] sm:max-h-[75vh] md:max-h-[80vh]">
+      <div className="ag-theme-alpine w-full">
         <AgGridReact
           columnDefs={columns}
           rowData={rowData}
@@ -71,8 +70,6 @@ const AgGridTable: React.FC<AgGridTableProps> = ({
           domLayout="autoHeight"
         />
       </div>
-
-    </div>
   );
 };
 
