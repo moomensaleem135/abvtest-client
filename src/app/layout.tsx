@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import '@/styles/tailwind.css';
 import Navbar from '@/components/navbar';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,6 +32,15 @@ export default function RootLayout({
         </video>
         <Navbar />
         {children}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              animation: 'toast-slide-in-right 1s ease-out',  
+              zIndex:50
+            },
+          }}
+        />
       </body>
     </html>
   );

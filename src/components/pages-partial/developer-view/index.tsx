@@ -8,20 +8,21 @@ import Link from "next/link"
 import { FilterButton } from "@/components/ui/filter-button"
 import { ChatMessage } from "@/components/ui/chat-message"
 import ValidationTable from "./validation-table"
-import { sendChatMessage } from "@/services/api"
+import { sendChatMessage, getValidatorsByMessageId } from "@/services/api"
 import { AddIcon, ExitIcon, MicIcon, RefreshIcon } from "@/assets/icons"
-import bgLogo from '../../../assets/images/bgLogo.png'
+import bgLogo from "../../../assets/images/bgLogo.png"
 
 interface Message {
   text: string
   isUser: boolean
+  messageId?: string
 }
 
 interface ValidationResult {
   scope: string
   details: string
   coverage: string
-  status: string;
+  status: string
 }
 
 const DeveloperView = () => {
@@ -31,6 +32,7 @@ const DeveloperView = () => {
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [allValidationResults, setAllValidationResults] = useState<ValidationResult[]>([])
+  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
 
   const filteredValidationResults = useMemo(() => {
     return allValidationResults.filter((result) => {
@@ -40,7 +42,6 @@ const DeveloperView = () => {
       return false
     })
   }, [allValidationResults, activeFilters])
-  
 
   const processValidationResponse = (response: any) => {
     const results: ValidationResult[] = []
@@ -49,7 +50,7 @@ const DeveloperView = () => {
       if (response.compliance.hipaa) {
         results.push({
           scope: "HIPAA",
-          details: response.compliance.hipaa.message,
+          details: response.compliance.hipaa.message || 'No Details',
           coverage: "10,000 ABV",
           status: response.compliance.hipaa.status as "Pass" | "Fail",
         })
@@ -58,7 +59,7 @@ const DeveloperView = () => {
       if (response.compliance.bankData) {
         results.push({
           scope: "Bank Details Check",
-          details: response.compliance.bankData.message,
+          details: response.compliance.bankData.message || 'No Details',
           coverage: response.compliance.bankData.status === "Pass" ? "No Coverage" : "Coverage Details",
           status: response.compliance.bankData.status as "Pass" | "Fail",
         })
@@ -67,7 +68,7 @@ const DeveloperView = () => {
       if (response.compliance.soc2) {
         results.push({
           scope: "Safe Health Advice",
-          details: response.compliance.soc2.message,
+          details: response.compliance.soc2.message || 'No Details',
           coverage: "25,000 ABV",
           status: response.compliance.soc2.status as "Pass" | "Fail",
         })
@@ -75,6 +76,59 @@ const DeveloperView = () => {
     }
 
     return results
+  }
+
+  const processValidatorsByMessageId = (response: any) => {
+    const results: ValidationResult[] = []
+
+    if (response?.validatorResponse) {
+      if (response.validatorResponse.Hippa !== undefined) {
+        results.push({
+          scope: "HIPAA",
+          details: "HIPAA compliance validation",
+          coverage: "10,000 ABV",
+          status: response.validatorResponse.Hippa,
+        })
+      }
+
+      if (response.validatorResponse.Soc2 !== undefined) {
+        results.push({
+          scope: "Safe Health Advice",
+          details: "SOC2 compliance validation",
+          coverage: "25,000 ABV",
+          status: response.validatorResponse.Soc2,
+        })
+      }
+
+      if (response.validatorResponse.bandDetails !== undefined) {
+        results.push({
+          scope: "Bank Details Check",
+          details: "Bank details compliance validation",
+          coverage: "No Coverage",
+          status: response.validatorResponse.bandDetails,
+        })
+      }
+    }
+    return results
+  }
+
+  const handleMessageClick = async (messageId: string) => {
+    try {
+      setIsLoadingValidation(true)
+
+      const response = await getValidatorsByMessageId(messageId)
+      const results = processValidatorsByMessageId(response)
+
+      if (results.length > 0) {
+        setAllValidationResults(results)
+      } else {
+        console.error("No validation results found in response")
+      }
+    } catch (error) {
+      console.error("Error fetching validation results:", error)
+    } finally {
+      setIsLoadingValidation(false)
+    }
   }
 
   const handleSendMessage = async () => {
@@ -92,12 +146,19 @@ const DeveloperView = () => {
 
         if (response.conversationId) {
           setConversationId(response.conversationId)
-           localStorage.setItem("currentConversationId", response.conversationId)
+          localStorage.setItem("currentConversationId", response.conversationId)
         }
 
-        // Add AI response to chat
         if (response.message && response.message.content) {
-          setChatMessages((prev) => [...prev, { text: response.message.content, isUser: false }])
+          const messageId = response.message?.messageId 
+          setChatMessages((prev) => [
+            ...prev,
+            {
+              text: response.message.content,
+              isUser: false,
+              messageId,
+            },
+          ])
         }
 
         if (response.validatorResponse) {
@@ -148,13 +209,13 @@ const DeveloperView = () => {
 
       <div className="flex flex-1 py-6 gap-4 flex-wrap md:flex-nowrap">
         <div className="flex-1 bg-[#AEAEAE] bg-opacity-[0.16] rounded-lg overflow-hidden">
-          <ValidationTable results={filteredValidationResults} />
+          <ValidationTable results={filteredValidationResults} isLoading={isLoadingValidation} />
         </div>
 
         <div className="flex-1 md:flex-[0.5] bg-[#AEAEAE] bg-opacity-[0.16] rounded-lg flex flex-col rounded-[19px]">
           <div className="p-4 flex items-center justify-between bg-[#515353] rounded-tr-[19px] rounded-tl-[19px]">
             <div className="flex items-center gap-2">
-              <Image src={bgLogo} width={40} height={40} alt="ABV Logo" />
+              <Image src={bgLogo || "/placeholder.svg"} width={40} height={40} alt="ABV Logo" />
               <div>
                 <h3 className="text-white font-medium">Test Chat</h3>
                 <p className="text-[#F7F7F7]/60 text-sm">Try validation settings!</p>
@@ -183,9 +244,15 @@ const DeveloperView = () => {
             />
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-360px)]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-380px)]">
             {chatMessages.map((message, index) => (
-              <ChatMessage key={index} text={message.text} isUser={message.isUser} />
+              <ChatMessage
+                key={index}
+                text={message.text}
+                isUser={message.isUser}
+                messageId={message.messageId}
+                onMessageClick={handleMessageClick}
+              />
             ))}
             {isLoading && (
               <div className="flex items-center space-x-2 text-white/60">

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 const Testpad = () => {
   const [activeView, setActiveView] = useState<string | null>(null);
@@ -18,6 +19,8 @@ const Testpad = () => {
 
   const handleReset = () => {
     setActiveView(null);
+    localStorage.removeItem('currentConversationId')
+    toast.success('Reset Successfully');
   };
 
   return (
