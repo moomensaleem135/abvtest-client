@@ -131,12 +131,12 @@ const ValidatorView = () => {
       <div className="flex flex-1 py-6 gap-4 flex-wrap md:flex-nowrap">
         {isLoading ? (
           <div className="w-full flex items-center justify-center text-white/80">
-            {/* <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-white/60 animate-pulse"></div>
               <div className="w-3 h-3 rounded-full bg-white/60 animate-pulse delay-100"></div>
               <div className="w-3 h-3 rounded-full bg-white/60 animate-pulse delay-200"></div>
-              <span className="ml-2">Loading compliance statistics...</span>
-            </div> */}
+              <span className="ml-2">Loading...</span>
+            </div>
           </div>
         ) : error ? (
           <div className="w-full flex items-center justify-center text-red-400 bg-[#AEAEAE] bg-opacity-[0.16] rounded-lg p-4">

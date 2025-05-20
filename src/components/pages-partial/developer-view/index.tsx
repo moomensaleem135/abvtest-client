@@ -244,7 +244,7 @@ const DeveloperView = () => {
             />
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-360px)]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-380px)]">
             {chatMessages.map((message, index) => (
               <ChatMessage
                 key={index}
